@@ -6,81 +6,96 @@
     ✅ Synchronization mechanisms (synchronized keyword, locks) to coordinate access to shared data
     ✅ High-level concurrency utilities in the java.util.concurrent package (Executors, thread pools, semaphores, etc.)
 
+---
+
 ## TCP Socket Server
     A TCP socket server is a program that listens for incoming TCP connections on a network port, establishes a connection (a socket) with a client, and then exchanges data reliably over that connection.
 
-## Single Threaded Server
-    1️⃣ Import java.net.* and java.io.*
+---
 
-    2️⃣ Create ServerSocket
-        ```java
+## 🛠 Technologies Used
+
+- **Java SE** (Thread API, NIO, `java.util.concurrent`)
+- **ExecutorService** for thread pool management
+- **Selector** and **ServerSocketChannel** for non-blocking I/O
+- **JMeter** for load testing
+
+---
+
+## 🚀 Server Types Explained
+
+### 1️⃣  Single Threaded Server
+     1. Import java.net.* and java.io.*
+
+     2. Create ServerSocket
+```java
         ServerSocket socket = new ServerSocket(port);
         socket.setSoTimeout(20000);
-        ```
+```
 
-    3️⃣ Accept connections (accept()) - Blocking Nature 
-        ```java
+     3. Accept connections (accept()) - Blocking Nature 
+```java
         Socket acceptedConnection = socket.accept();
-        ```
+```
 
-    4️⃣ Get input/output streams - Blocking Nature
-        ```java
+     4. Get input/output streams - Blocking Nature
+```java
         PrintWriter toClient = new PrintWriter(acceptedConnection.getOutputStream(), true);
         BufferedReader fromClient = new BufferedReader(new InputStreamReader(acceptedConnection.getInputStream()));
-        ```
+```
             
-    5️⃣ Read/write data
-        ```java
+     5. Read/write data
+```java
         String line = fromClient.readLine();
         System.out.println("Client: "+line);
         //First recieves a message from client and then send reply message to the client
         toClient.println("Hello World from the server");
-        ```
+```
 
-    6️⃣ Close sockets
-        ```java
+    6. Close sockets
+```java
         clientSocket.close();
         serverSocket.close();
-        ```
+```
 
-## Multi Threaded Server
+### 2️⃣ Multi Threaded Server
     Whenever a client connection is accepted by the server, the server creates a new thread to handle that client’s request. This allows the server to handle multiple clients concurrently, making it faster and more responsive.
 
     However, this approach has a drawback. When there is a huge load (many client connections), creating a separate thread for each client consumes a lot of system resources. Each thread requires memory for its thread stack and other internal structures.
 
     As the number of threads grows, this can lead to high memory usage and increased CPU overhead for managing threads. Additionally, if too many threads are waiting for execution for a long time (due to thread scheduling delays or resource contention), they may become inactive or terminated by the system, leading to poor performance or failures in serving clients efficiently.
 
-## ThreadPool Server
+### 3️⃣ ThreadPool Server
     A thread pool is a collection of pre-created reusable threads that are managed by a framework or runtime. Instead of creating a new thread for every task or client connection, tasks are submitted to the pool, and an available thread executes them.A thread pool is like having a fixed team of workers ready to do jobs. You don’t hire a new worker every time (i.e., create a new thread).
 
     Java provides built-in thread pools via the ExecutorService interface.
-    Example:
-        ```java
+**Example:**
+```java
         ExecutorService pool = Executors.newFixedThreadPool(10);
-        ```
+```
 
     This creates a pool of 10 threads. (INCREASING POOL SIZE INCREASES PERFORMANCE)
 
     When you submit tasks (pool.submit() or pool.execute()), they are queued if all threads are busy, and handled as threads become free.
 
 
-## Non Blocking ThreadPool Socket Server
-    ** Why implement non blocking nature?
+### 4️⃣ Non Blocking ThreadPool Socket Server
+**Why implement non blocking nature?**
         - serverSocket.accept() blocks until a client connects
         - Each thread uses InputStream.read() and OutputStream.write(), which block while waiting for data.
 
         Due to this blocking nature, Threads can pile up under heavy load. So we implement this.
 
-    ** How to implement this?
+**How to implement this?**
         Java NIO (New I/O) is a collection of Java APIs introduced in Java 1.4 that provide high-performance, scalable I/O operations. NIO enables non-blocking I/O, buffer-oriented data handling, and advanced features like selectors and channels.
 
-    ```java
+```java
     ServerSocket (blocking)                 ->  ServerSocketChannel (non-blocking)
     Socket.accept() (blocking)              ->  Selector to multiplex connections
     BufferedReader.readLine() (blocking)    ->  SocketChannel.read() (non-blocking)
-    ```
+```
 
-    ** Working:
+**Working:**
         - Single selector thread waits for ready channels.
         - When a channel is ready to read, the selector is notified.
         - You dispatch processing to the thread pool (e.g., parsing the message, responding).
@@ -103,13 +118,15 @@
     ✅ This is a classic Reactor + Worker Pool hybrid.
 
 
-## Load Balancer
+### 5️⃣ Load Balancer
     The load balancer listens for incoming client TCP connections, selects a backend server using a round-robin strategy, and transparently forwards bidirectional data between the client and the chosen backend server to distribute traffic evenly and improve scalability.
 
-    ** Ports used:
-    Load Balancer - 8010
-    Server 1 - 8011 (ThreadPool Server)
-    Server 2 - 8012 (ThreadPool Server)
+**Ports used:**
+    | Component         | Port |
+    |-------------------|------|
+    | Load Balancer     | 8010 |
+    | Backend Server 1  | 8011 | (ThreadPool Server)
+    | Backend Server 2  | 8012 | (ThreadPool Server)
 
     The load balancer creates 2 sockets:
         - The load balancer uses a ServerSocket to accept incoming client connections and obtains a client Socket representing each connected client.
@@ -117,7 +134,7 @@
 
 
 ## Thread Pool vs Event Loop
-    ** ✅ Thread Pool
+**✅ Thread Pool**
     - Maintains a fixed number of threads to handle tasks.
     - Each thread typically blocks while reading or writing data for a connection.
     - Simpler to implement because you can use synchronous code.
@@ -125,7 +142,7 @@
     - Per-connection memory overhead is higher (each thread consumes stack space).
     - Susceptible to performance degradation due to context switching under high load.
 
-    ** ✅ Event Loop
+**✅ Event Loop**
     - Uses one or a small number of threads to monitor many connections simultaneously.
     - Relies on non-blocking I/O and readiness notifications (e.g., using Selector in Java NIO).
     - Scales very efficiently to tens of thousands of concurrent connections.
@@ -138,7 +155,7 @@
 ## ExecutorService
     A framework in Java for managing and controlling a pool of threads to run tasks asynchronously.
 
-    ✅ ExecutorService – How It Works:
+    **✅ ExecutorService – How It Works:**
 
         - Creates a thread pool of fixed size to handle concurrent tasks efficiently.
         - You submit tasks (Runnable or Callable) to the ExecutorService for execution.
@@ -160,7 +177,7 @@
 
 
 
-Note:
+**Note:**
 
 Client Socket Creation takes both IP address as mandatory field, whereas Server Socket Creation takes only Port as a mandatory field.
     When you create a server socket, you only need to specify the port (and optionally the IP/interface to bind to), because the server is listening for incoming connections, not connecting out to a specific address.
