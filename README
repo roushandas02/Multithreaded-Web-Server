@@ -90,6 +90,48 @@ Non Blocking ThreadPool Socket Server
     ✅ This is a classic Reactor + Worker Pool hybrid.
 
 
+Load Balancer
+    The load balancer listens for incoming client TCP connections, selects a backend server using a round-robin strategy, and transparently forwards bidirectional data between the client and the chosen backend server to distribute traffic evenly and improve scalability.
+
+    Ports used:
+    Load Balancer - 8010
+    Server 1 - 8011 (ThreadPool Server)
+    Server 2 - 8012 (ThreadPool Server)
+
+    The load balancer creates 2 sockets:
+        - The load balancer uses a ServerSocket to accept incoming client connections and obtains a client Socket representing each connected client.
+        - For each client connection, it creates a separate backend Socket to connect to the selected backend server and launches two threads to forward data bidirectionally between the client and backend sockets.
+
+
+Thread Pool vs Event Loop
+    ✅ Thread Pool
+    - Maintains a fixed number of threads to handle tasks.
+    - Each thread typically blocks while reading or writing data for a connection.
+    - Simpler to implement because you can use synchronous code.
+    - Good for moderate concurrency, e.g., hundreds or a few thousand connections.
+    - Per-connection memory overhead is higher (each thread consumes stack space).
+    - Susceptible to performance degradation due to context switching under high load.
+
+    ✅ Event Loop
+    - Uses one or a small number of threads to monitor many connections simultaneously.
+    - Relies on non-blocking I/O and readiness notifications (e.g., using Selector in Java NIO).
+    - Scales very efficiently to tens of thousands of concurrent connections.
+    - Requires more complex code (callbacks, state machines).
+    - Minimal per-connection memory usage because it does not create a thread per connection.
+    - Provides predictable latency even under heavy load.
+    - Languages like JavaScript which uses Single Thread, uses Event Loop for handling operations
+
+
+ExecutorService
+    A framework in Java for managing and controlling a pool of threads to run tasks asynchronously.
+
+    ✅ ExecutorService – How It Works:
+
+        - Creates a thread pool of fixed size to handle concurrent tasks efficiently.
+        - You submit tasks (Runnable or Callable) to the ExecutorService for execution.
+        - Queues tasks automatically if all threads are busy.
+        - Assigns tasks to available threads in the pool as soon as they become free.
+        - Provides methods to shut down gracefully, such as shutdown() and shutdownNow(), to stop accepting new tasks and manage cleanup.
 
 
 
@@ -101,6 +143,11 @@ Non Blocking ThreadPool Socket Server
 
 
 
+
+
+
+
+Note:
 
 Client Socket Creation takes both IP address as mandatory field, whereas Server Socket Creation takes only Port as a mandatory field.
     When you create a server socket, you only need to specify the port (and optionally the IP/interface to bind to), because the server is listening for incoming connections, not connecting out to a specific address.

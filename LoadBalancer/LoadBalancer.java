@@ -61,7 +61,7 @@ public class LoadBalancer {
     //Handles connecting the client to the backend server and piping data between them.
     private void handleConnection(Socket clientSocket, String backendHost, int backendPort) {
         //try-with-resources: Ensures backend socket closes when done.
-        //this will be treated as client socket by backend both servers
+        //this will be treated as client socket by backend both servers. 1 socket and 2 threads used here
         try (Socket backendSocket = new Socket(backendHost, backendPort)) {
             // Create threads to forward data in both directions
             Thread clientToBackend = new Thread(() -> forwardData(clientSocket, backendSocket));
