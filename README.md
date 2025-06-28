@@ -122,11 +122,11 @@
     The load balancer listens for incoming client TCP connections, selects a backend server using a round-robin strategy, and transparently forwards bidirectional data between the client and the chosen backend server to distribute traffic evenly and improve scalability.
 
 **Ports used:**
-    | Component         | Port |
-    |-------------------|------|
-    | Load Balancer     | 8010 |
-    | Backend Server 1  | 8011 | (ThreadPool Server)
-    | Backend Server 2  | 8012 | (ThreadPool Server)
+| Component         | Port |
+|-------------------|------|
+| Load Balancer     | 8010 |
+| Backend Server 1  | 8011 | (ThreadPool Server)
+| Backend Server 2  | 8012 | (ThreadPool Server)
 
     The load balancer creates 2 sockets:
         - The load balancer uses a ServerSocket to accept incoming client connections and obtains a client Socket representing each connected client.
@@ -167,17 +167,40 @@
 
 
 
-
-
-
-
-
-
-
-
-
-
 **Note:**
 
 Client Socket Creation takes both IP address as mandatory field, whereas Server Socket Creation takes only Port as a mandatory field.
     When you create a server socket, you only need to specify the port (and optionally the IP/interface to bind to), because the server is listening for incoming connections, not connecting out to a specific address.
+
+
+
+
+# JMeter
+Apache JMeter is an open-source tool used to load test, performance test, and measure the behavior of applications.
+
+**🎯 What does it do?**
+- Simulates multiple users or clients sending requests to a server (1 lakh + requests here).
+- Measures response time, throughput, and resource usage.
+- Helps you find performance bottlenecks and test how your application behaves under heavy load.
+- ![Screenshot (1064)](https://github.com/user-attachments/assets/b3c2199d-92bb-4b31-9306-3254aaf9ede4)
+
+
+## 🚀 Server Types Explained
+
+### 1️⃣  Single Threaded Server
+![Screenshot (1065)](https://github.com/user-attachments/assets/825cfc16-95a0-4861-a831-4e2a5d84f06b)
+
+### 2️⃣ Multi Threaded Server
+![Screenshot (1066)](https://github.com/user-attachments/assets/aeb1295d-8924-451c-8d80-1454a5783e17)
+![Screenshot (1067)](https://github.com/user-attachments/assets/56d85726-f4f4-42ed-a554-b034c8982664)
+
+### 3️⃣ ThreadPool Server
+![Screenshot (1068)](https://github.com/user-attachments/assets/da980aba-ee3e-4fd2-befb-60aa941dd97f)
+![Screenshot (1069)](https://github.com/user-attachments/assets/3b9e692b-63ec-4d05-88b2-9af7631af395)
+
+### 4️⃣ Non Blocking ThreadPool Socket Server
+![Screenshot (1070)](https://github.com/user-attachments/assets/f0d2c91e-2d86-441c-9fd6-28aa9c612fd1)
+![Screenshot (1071)](https://github.com/user-attachments/assets/388ddcc3-4a06-43f2-8de7-b1932962bcb3)
+
+
+
